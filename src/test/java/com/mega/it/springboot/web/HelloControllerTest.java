@@ -1,11 +1,15 @@
 package com.mega.it.springboot.web;
 
+import com.mega.it.springboot.config.auth.SecurityConfig;
 import junit.framework.TestCase;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -15,13 +19,17 @@ import java.util.regex.Matcher;
 
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = HelloController.class)
+@WebMvcTest(controllers = HelloController.class,
+                excludeFilters = {
+                    @ComponentScan.Filter(type= FilterType.ASSIGNABLE_TYPE,classes = SecurityConfig.class)
+                })
 public class HelloControllerTest extends TestCase {
 
     @Autowired
     private MockMvc mvc;
 
     @Test
+    @WithMockUser(roles = "USER")
     public void helloReturn() throws Exception{
         String hello = "hello";
 
@@ -31,6 +39,7 @@ public class HelloControllerTest extends TestCase {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     public void helloDtoReturn() throws Exception{
         String name = "hello";
         int amount = 1000;
